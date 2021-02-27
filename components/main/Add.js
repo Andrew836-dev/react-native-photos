@@ -3,7 +3,7 @@ import { Button, View, StyleSheet, Text, Image } from "react-native";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 
-function Add() {
+function Add({ navigation }) {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
@@ -14,6 +14,7 @@ function Add() {
     Camera.requestPermissionsAsync()
       .then(({ status }) => setHasCameraPermission(() => status === "granted"))
       .catch(() => setHasCameraPermission(() => false));
+
     ImagePicker.requestCameraPermissionsAsync()
       .then(({ status }) => setHasGalleryPermission(() => status === "granted"))
       .catch(() => setHasGalleryPermission(() => false));
@@ -21,8 +22,9 @@ function Add() {
 
   const takePicture = async () => {
     if (camera) {
-      const data = await camera.takePictureAsync(null);
-      setImage(data.uri);
+      camera.takePictureAsync(null)
+        .then(({ uri }) => setImage(uri))
+        .catch(console.log);
     }
   }
 
@@ -67,6 +69,7 @@ function Add() {
       />
       <Button title="Take Picture" onPress={() => takePicture()} />
       <Button title="Pick Image From Gallery" onPress={() => pickImage()} />
+      <Button title="Save" onPress={() => navigation.navigate("Save", { image })} />
       {image && <Image source={{ uri: image }} style={{ flex: 1 }} />}
     </View>
   );

@@ -26,6 +26,7 @@ import RegisterScreen from "./components/auth/Register";
 import LoginScreen from "./components/auth/Login";
 import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
+import SaveScreen from "./components/main/Save";
 import { View, Text } from "react-native";
 
 const Stack = createStackNavigator();
@@ -70,6 +71,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="Main">
           <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Add" component={AddScreen} options={{ headerShown: true }} />
+          <Stack.Screen name="Save" component={SaveScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
