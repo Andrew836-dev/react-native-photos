@@ -8,7 +8,7 @@ function LoginScreen({ navigation }) {
   function onSignIn() {
     const { email, password } = formValues;
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((result) => console.log(result))
+      .then((result) => console.log("Login success", result))
       .catch((error) => console.log(error));
   }
   return (
