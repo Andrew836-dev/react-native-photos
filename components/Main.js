@@ -2,13 +2,12 @@ import React, { useEffect } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../redux/actions";
+import { fetchUser, fetchUserPosts } from "../redux/actions";
 
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
 import FeedScreen from "./main/Feed";
 import ProfileScreen from "./main/Profile";
-import AddScreen from "./main/Add";
 
 const EmptyScreen = () => null;
 
@@ -20,6 +19,7 @@ function MainScreen() {
 
   useEffect(() => {
     dispatch(fetchUser());
+    dispatch(fetchUserPosts());
   }, []);
 
   return (
