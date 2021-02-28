@@ -1,4 +1,4 @@
-import { USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE } from "../constants";
+import { CLEAR_DATA, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE } from "../constants";
 
 const initialState = {
   users: [],
@@ -7,6 +7,8 @@ const initialState = {
 
 export const users = (state = initialState, action) => {
   switch (action.type) {
+    case CLEAR_DATA:
+      return initialState;
     case USERS_DATA_STATE_CHANGE:
       return {
         ...state,

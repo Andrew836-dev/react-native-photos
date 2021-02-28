@@ -22,10 +22,10 @@ function Profile(props) {
     setIsFollowing(() => following.includes(props.route.params.uid));
   }, [props.route.params.uid, following]);
 
-  function refresh(UID) {
+  function refresh(uid) {
     firebase.firestore()
       .collection("posts")
-      .doc(UID)
+      .doc(uid)
       .collection("userPosts")
       .orderBy("creation", "asc")
       .get()
@@ -39,7 +39,7 @@ function Profile(props) {
       });
     firebase.firestore()
       .collection("users")
-      .doc(UID)
+      .doc(uid)
       .get()
       .then(snapshot => {
         if (snapshot.exists) {
@@ -71,22 +71,14 @@ function Profile(props) {
       <View style={styles.containerInfo}>
         <Text>{user.name}</Text>
         {currentUser.email === user.email && <Text>{user.email}</Text>}
-        {props.route.params.uid !== firebase.auth().currentUser.uid && (
-          <View>
-            {isFollowing ? (
-              <Button
-                title="Following"
-                onPress={() => onUnfollow()}
-              />
-            ) :
-              (
-                <Button
-                  title="Follow"
-                  onPress={() => onFollow()}
-                />
-              )}
-          </View>
-        )}
+        <View>
+          {props.route.params.uid === firebase.auth().currentUser.uid
+            ? (<Button title="Log Out" onPress={() => firebase.auth().signOut()} />)
+            : (isFollowing
+              ? <Button title="Following" onPress={() => onUnfollow()} />
+              : <Button title="Follow" onPress={() => onFollow()} />
+            )}
+        </View>
       </View>
       <View style={styles.containerGallery}>
         <FlatList

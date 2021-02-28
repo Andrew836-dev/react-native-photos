@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
+import { clearData, fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
 import firebase from "firebase";
 
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -20,6 +20,7 @@ function MainScreen() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(clearData());
     dispatch(fetchUser());
     dispatch(fetchUserPosts());
     dispatch(fetchUserFollowing());
