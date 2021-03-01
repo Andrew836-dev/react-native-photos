@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, View, Text, Image, FlatList, StyleSheet } from "react-native";
+import { Button, View, Text, Image, FlatList, StyleSheet, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import firebase from "firebase";
 import "firebase/firestore";
@@ -116,9 +116,12 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1 / 1
   },
-  containerImage: {
+  containerImage: Platform.OS === "web" ? ({
+    minHeight: 120,
     flex: 1 / 3
-  }
-})
+  }) : ({
+    flex: 1 / 3
+  })
+});
 
 export default Profile;

@@ -22,7 +22,7 @@ function SearchScreen({ navigation }) {
   }
 
   return (
-    <View>
+    <View style={{ paddingTop: 40 }}>
       <TextInput placeholder="Search . . ." onChangeText={fetchUsers} />
       <FlatList
         numColumns={1}
