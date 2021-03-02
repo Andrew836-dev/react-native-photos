@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useDispatch, useSelector } from "react-redux";
-import { clearData, fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
-import firebase from "firebase";
+import { fetchUser, fetchUserFollowing, fetchUserPosts } from "../redux/actions";
 
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
@@ -20,13 +19,12 @@ function MainScreen() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(clearData());
     dispatch(fetchUser());
     dispatch(fetchUserPosts());
     dispatch(fetchUserFollowing());
   }, []);
 
-  return (
+  return currentUser !== null && (
     <Tab.Navigator initialRouteName="Feed" labeled={false}>
       <Tab.Screen name="Feed" component={FeedScreen}
         options={{
@@ -59,7 +57,7 @@ function MainScreen() {
         listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
-            navigation.navigate("Profile", { uid: firebase.auth().currentUser.uid })
+            navigation.navigate("Profile", { uid: currentUser.uid })
           }
         })}
         options={{

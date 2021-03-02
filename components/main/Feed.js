@@ -2,26 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Button, View, Text, Image, FlatList, StyleSheet, Platform } from "react-native";
 import { useSelector } from "react-redux";
 
-function Feed() {
+function Feed({ navigation }) {
   const [posts, setPosts] = useState([]);
 
-  const usersLoaded = useSelector(store => store.usersState.usersLoaded);
   const users = useSelector(store => store.usersState.users);
   const following = useSelector(store => store.userState.following);
 
   useEffect(() => {
-    let posts = [];
-    if (usersLoaded === following.length) {
-      following.forEach(uid => {
-        const user = users.find(el => el.uid === uid);
-        if (user !== undefined) {
-          posts = [...posts, ...user.posts];
-        }
-      });
-      posts.sort((x, y) => x.creation - y.creation);
-      setPosts(() => posts);
-    }
-  }, [usersLoaded, following]);
+      const posts = users.filter(user => user.hasOwnProperty("posts"))
+        .map(user => user.posts)
+        .reduce((prev, curr) => [...prev, ...curr], [])
+        .sort((x, y) => x.creation - y.creation);
+      setPosts(posts);
+  }, [following, users]);
 
   return (
     <View style={styles.container}>
@@ -33,10 +26,18 @@ function Feed() {
             data={posts}
             renderItem={({ item }) => (
               <View style={styles.containerImage}>
-                <Image
+                <Text onPress={() => navigation.navigate("Profile", { uid: item.user.uid })}>
+                  {item.user.name}
+                </Text>
+                <Text style={styles.image}>{item.caption}</Text>
+                {/* <Image
                   style={styles.image}
                   source={{ uri: item.imageURL }}
-                />
+                  accessibilityLabel={`Image caption: ${item.caption}`}
+                /> */}
+                <Text onPress={() => navigation.navigate("Comment", { uid: item.user.uid, postId: item.id, imageURL: item.imageURL })}>
+                  View Commments...
+                </Text>
               </View>
             )}
           />
@@ -52,7 +53,7 @@ function Feed() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 40,
+    marginTop: 30,
   },
   containerGallery: {
     flex: 1

@@ -44,6 +44,14 @@ export const getPostsByUserId = async (uid) => {
     ));
 }
 
+export const getBulkUsers = (uids) => {
+  return firebase.firestore()
+    .collection("users")
+    .where("uid", "in", uids)
+    .get()
+    .then(response => response.docs.map(doc => doc.data()));
+}
+
 export const getCurrentUserFollowingCollection = () => getUserFollowingCollection(firebase.auth().currentUser.uid);
 
 export const getUserFollowingCollection = (uid) => {

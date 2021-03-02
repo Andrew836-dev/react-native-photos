@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, View, Text, Image, FlatList, StyleSheet, Platform } from "react-native";
-import { useSelector } from "react-redux";
-import firebase from "firebase";
-import "firebase/firestore";
+import { followUser, getOneByUserId, getPostsByUserId, unFollowUser } from "../../utils/userAPI";
+import { useSelector, useDispatch } from "react-redux";
+import { signOut } from "../../redux/actions";
 
 function Profile(props) {
   const [userPosts, setUserPosts] = useState([]);
@@ -11,69 +11,44 @@ function Profile(props) {
   const currentUserPosts = useSelector(store => store.userState.posts);
   const currentUser = useSelector(store => store.userState.currentUser);
   const following = useSelector(store => store.userState.following);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (props.route.params.uid === firebase.auth().currentUser.uid) {
-      setUser(currentUser);
-      setUserPosts(currentUserPosts);
-    } else {
-      refresh(props.route.params.uid);
+    if (currentUser !== null) {
+      if (props.route.params.uid === currentUser.uid) {
+        setUser(currentUser);
+        setUserPosts(currentUserPosts);
+      } else {
+        getUserData(props.route.params.uid);
+      }
+      setIsFollowing(() => following.includes(props.route.params.uid));
     }
-    setIsFollowing(() => following.includes(props.route.params.uid));
-  }, [props.route.params.uid, following]);
+  }, [props.route.params.uid, following, currentUser, currentUserPosts]);
 
-  function refresh(uid) {
-    firebase.firestore()
-      .collection("posts")
-      .doc(uid)
-      .collection("userPosts")
-      .orderBy("creation", "asc")
-      .get()
-      .then(snapshot => {
-        const posts = snapshot.docs.map(doc => {
-          const id = doc.id;
-          const data = doc.data();
-          return { ...data, id };
-        });
-        setUserPosts(posts);
-      });
-    firebase.firestore()
-      .collection("users")
-      .doc(uid)
-      .get()
-      .then(snapshot => {
-        if (snapshot.exists) {
-          setUser(snapshot.data());
-        } else {
-          console.log("Snapshot does not exist");
-        }
-      });
-  }
-  const onFollow = () => {
-    firebase.firestore()
-      .collection("following")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("userFollowing")
-      .doc(props.route.params.uid)
-      .set({})
-  }
-  const onUnfollow = () => {
-    firebase.firestore()
-      .collection("following")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("userFollowing")
-      .doc(props.route.params.uid)
-      .delete()
+  function getUserData(uid) {
+    getPostsByUserId(uid)
+      .then(posts => setUserPosts(() => posts));
+    getOneByUserId(uid)
+      .then(user => setUser(() => user));
   }
 
-  return user && (
+  const onSignOut = () => {
+    dispatch(signOut());
+    setUser(() => null);
+  }
+
+  const onFollow = () => followUser(currentUser.uid, props.route.params.uid);
+
+  const onUnfollow = () => unFollowUser(currentUser.uid, props.route.params.uid);
+
+  return !!user ? (
     <View style={styles.container}>
       <View style={styles.containerInfo}>
         <Text>{user.name}</Text>
         {currentUser.email === user.email && <Text>{user.email}</Text>}
         <View>
-          {props.route.params.uid === firebase.auth().currentUser.uid
-            ? (<Button title="Log Out" onPress={() => firebase.auth().signOut()} />)
+          {props.route.params.uid === currentUser.uid
+            ? (<Button title="Log Out" onPress={() => onSignOut()} />)
             : (isFollowing
               ? <Button title="Following" onPress={() => onUnfollow()} />
               : <Button title="Follow" onPress={() => onFollow()} />
@@ -87,10 +62,11 @@ function Profile(props) {
           data={userPosts}
           renderItem={({ item }) => (
             <View style={styles.containerImage}>
-              <Image
+              <Text>{item.caption}</Text>
+              {/* <Image
                 style={styles.image}
                 source={{ uri: item.imageURL }}
-              />
+              /> */}
             </View>
 
           )}
@@ -98,7 +74,9 @@ function Profile(props) {
         {/* <Button title="refresh" onPress={() => refresh(props.route.params.uid)} /> */}
       </View>
     </View>
-  );
+  ) : (
+      <View><Text style={{ textAlign: "center" }}>{`There as an error loading this user`}</Text></View>
+    );
 }
 
 const styles = StyleSheet.create({
