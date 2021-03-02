@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, TextInput, Image, Button } from "react-native";
-import firebase from "firebase";
+import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 

@@ -1,5 +1,5 @@
 import { doSignOut, getBulkUsers, getCurrentUser, getCurrentUserFollowingCollection, getCurrentUserPosts, getOneByUserId, getPostsByUserId } from "../../utils/userAPI";
-import { CLEAR_DATA, USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE } from "../constants";
+import { CLEAR_DATA, USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE, USERS_BULK_STATE_CHANGE } from "../constants";
 
 
 export function clearData() {
@@ -17,7 +17,10 @@ export function signOut() {
 export function fetchUser() {
   return (dispatch => {
     getCurrentUser()
-      .then(user => dispatch({ type: USER_STATE_CHANGE, currentUser: user }));
+      .then(user => {
+        dispatch({ type: USER_STATE_CHANGE, currentUser: user });
+        dispatch({ type: USERS_DATA_STATE_CHANGE, user });
+      });
   });
 }
 
@@ -52,8 +55,8 @@ export function fetchUsersData(uidList, isFollowed) {
     if (missingUserIDs.length) {
       getBulkUsers(missingUserIDs)
         .then(users => {
+          dispatch({ type: USERS_BULK_STATE_CHANGE, users });
           users.forEach(user => {
-            dispatch({ type: USERS_DATA_STATE_CHANGE, user });
             if (isFollowed) {
               dispatch(fetchUsersFollowingPosts(user.uid));
             }

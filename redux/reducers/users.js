@@ -1,4 +1,4 @@
-import { CLEAR_DATA, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE } from "../constants";
+import { CLEAR_DATA, USERS_BULK_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE } from "../constants";
 
 const initialState = {
   users: [],
@@ -13,6 +13,12 @@ export const users = (state = initialState, action) => {
       return {
         ...state,
         users: [...state.users, action.user]
+      };
+    case USERS_BULK_STATE_CHANGE:
+      const newUsers = action.users.filter(newUser => state.users.every(existingUser => existingUser.uid !== newUser.uid));
+      return {
+        ...state,
+        users: [...state.users, ...newUsers]
       };
     case USERS_POSTS_STATE_CHANGE:
       return {
