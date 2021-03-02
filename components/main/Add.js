@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, View, StyleSheet, Text, Image } from "react-native";
 import { Camera } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
+import { requestCameraPermissionsAsync, MediaTypeOptions, launchImageLibraryAsync } from "expo-image-picker";
 
 function Add({ navigation }) {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -15,7 +15,7 @@ function Add({ navigation }) {
       .then(({ status }) => setHasCameraPermission(() => status === "granted"))
       .catch(() => setHasCameraPermission(() => false));
 
-    ImagePicker.requestCameraPermissionsAsync()
+    requestCameraPermissionsAsync()
       .then(({ status }) => setHasGalleryPermission(() => status === "granted"))
       .catch(() => setHasGalleryPermission(() => false));
   }, []);
@@ -29,8 +29,8 @@ function Add({ navigation }) {
   }
 
   const pickImage = async () => {
-    let { uri, cancelled, ...result } = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let { uri, cancelled, ...result } = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,

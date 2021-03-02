@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button, TextInput, View } from "react-native";
-import firebase from "firebase";
+import { doSignIn } from "../../utils/userAPI"
 
-function LoginScreen({ navigation }) {
+function LoginScreen() {
   const [formValues, setFormValue] = useState({ email: "", password: "" });
 
   function onSignIn() {
     const { email, password } = formValues;
-    firebase.auth().signInWithEmailAndPassword(email, password)
+    doSignIn(email, password)
       .then((result) => console.log("Login success", result))
       .catch((error) => console.log(error));
   }

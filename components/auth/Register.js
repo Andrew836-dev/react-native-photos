@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import { View, Button, TextInput } from "react-native";
-
-import firebase from "firebase";
-import "firebase/firestore";
+import { doRegister } from "../../utils/userAPI";
 
 function RegisterScreen() {
   const [formValues, setFormValue] = useState({ name: "", email: "", password: "" });
 
   function onSignUp() {
     const { name, email, password } = formValues;
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(() => firebase.firestore().collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .set({ name, email })
-      ).catch((error) => console.log(error));
+    doRegister(name, email, password)
+      .catch((error) => console.log(error));
   }
 
   return (

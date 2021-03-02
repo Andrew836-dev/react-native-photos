@@ -50,7 +50,7 @@ export default function App() {
   if (!loaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text>Loading</Text>
+        <Text style={{ textAlign: "center" }}>Loading</Text>
       </View>
     )
   }
